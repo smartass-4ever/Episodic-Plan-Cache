@@ -1,0 +1,18 @@
+# Episodic Plan Cache - Requirements
+
+# Core dependencies
+numpy>=1.24.0
+
+# Optional: Production embeddings
+# openai>=1.0.0  # For text-embedding-ada-002
+# sentence-transformers>=2.2.0  # For local embeddings
+# cohere>=4.0.0  # For Cohere embeddings
+
+# Optional: Storage backends
+# redis>=5.0.0  # For Redis cache
+# psycopg2-binary>=2.9.0  # For PostgreSQL
+# pinecone-client>=2.0.0  # For Pinecone vector DB
+
+# Development
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
