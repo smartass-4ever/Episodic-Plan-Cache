@@ -7,7 +7,7 @@ This implementation is based on my RFC posted to Aden Hive:
 
 ### The Problem I Identified
 
-While studying Aden Hive's 100-agent orchestrator, I noticed a critical inefficiency: the Queen Bee (LLM orchestrator) regenerates execution plans from scratch for EVERY user intent, even recurring tasks like "monthly budgeting."
+While studying Aden Hive's agent orchestrator, I noticed a critical inefficiency: the Queen Bee (LLM orchestrator) regenerates execution plans from scratch for EVERY user intent, even recurring tasks like "monthly budgeting."
 
 This creates three production bottlenecks:
 1. **15-30 second latency** per planning session
@@ -56,21 +56,6 @@ if plan_fails:
     # Auto-evicts if failure rate > 50%
 ```
 
-## Results
-
-Tested on 100 recurring budget reports:
-
-| Metric | Baseline | With Cache | Improvement |
-|--------|----------|------------|-------------|
-| Latency | 33 min | 20 sec | **99% faster** |
-| LLM Calls | 100 | 1 | **99% reduction** |
-| Tokens | 200k | 2k | **$1.98 saved** |
-| Determinism | Variable | Consistent | **Auditable** |
-
-**Annual Impact** (for one workflow type):
-- Cost savings: $23.76/year
-- Time savings: 6.6 hours/year
-- Consistent, deterministic execution
 
 ## Architecture Highlights
 
@@ -199,14 +184,6 @@ Plans can become stale:
 
 Automatic eviction + re-planning keeps cache fresh.
 
-## Comparison to Related Work
-
-| System | Approach | Limitation |
-|--------|----------|------------|
-| LangChain Memory | Stores conversations | Not plan-specific |
-| RAG Caching | Caches LLM outputs | Doesn't reuse structure |
-| Function Memoization | Caches by input hash | Misses semantic similarity |
-| **This System** | Semantic plan reuse | - |
 
 ## Files
 
@@ -215,12 +192,6 @@ Automatic eviction + re-planning keeps cache fresh.
 - `plan_cache_README.md` - Full documentation
 - `requirements_plan_cache.txt` - Dependencies
 
-## Next Steps
-
-1. **Test with real orchestrator** (Aden Hive, LangGraph, etc.)
-2. **Add production storage** (Redis backend)
-3. **Benchmark on real workloads** (not simulated)
-4. **Submit PR to Aden** (if they're interested)
 
 ## Why I Built This
 
@@ -233,4 +204,4 @@ If you're building agent orchestrators and facing the "re-planning tax," this mi
 **Status**: Working proof-of-concept  
 **License**: MIT  
 **Origin**: RFC for Aden Hive improvement  
-**Contact**: [Your contact info]
+**Contact**: mahikajadhav22@gmail.com
