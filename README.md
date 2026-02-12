@@ -30,16 +30,6 @@ User Intent
                                  [Evolution Trigger]
 ```
 
-## Performance Impact
-
-Real-world scenario: 100 monthly budget reports
-
-| Metric | Without Cache | With Cache | Improvement |
-|--------|--------------|------------|-------------|
-| Latency | 33 min | 3 min | **90% faster** |
-| LLM Calls | 100 | 10 | **90% reduction** |
-| Tokens | 200k | 20k | **$1.80 saved** |
-| Determinism | Variable | Consistent | **Auditable** |
 
 ## Quick Start
 
@@ -127,85 +117,6 @@ The cache:
 - Triggers LLM re-planning (evolution)
 - Stores improved plan
 
-## Integration Guide
-
-### For Existing Orchestrators
-
-**Aden Hive:**
-```python
-from plan_cache import PlanCache
-
-class HiveOrchestrator:
-    def __init__(self):
-        self.cache = PlanCache(similarity_threshold=0.95)
-    
-    def orchestrate(self, user_intent):
-        # Try cache first
-        cached = self.cache.search(user_intent)
-        
-        if cached:
-            plan, score = cached
-            dag = self.cache.hydrate(plan, self.get_runtime_vars())
-            return self.execute_dag(dag)
-        
-        # Cache miss - use Queen Bee planning
-        dag = self.queen_bee_plan(user_intent)
-        result = self.execute_dag(dag)
-        
-        if result.success:
-            self.cache.store_plan(user_intent, dag, self.get_runtime_vars())
-        
-        return result
-```
-
-**LangGraph:**
-```python
-from plan_cache import PlanCache
-
-cache = PlanCache()
-
-def run_workflow(user_query):
-    # Check cache
-    cached = cache.search(user_query)
-    
-    if cached:
-        plan, _ = cached
-        graph = cache.hydrate(plan, {"query": user_query})
-        return execute_langgraph(graph)
-    
-    # Build new graph
-    graph = build_graph(user_query)
-    result = execute_langgraph(graph)
-    
-    if result["status"] == "success":
-        cache.store_plan(user_query, graph, {"query": user_query})
-    
-    return result
-```
-
-**CrewAI:**
-```python
-from plan_cache import PlanCache
-
-cache = PlanCache()
-
-def run_crew(objective):
-    # Try cache
-    cached = cache.search(objective)
-    
-    if cached:
-        plan, _ = cached
-        task_list = cache.hydrate(plan, {"objective": objective})
-        return crew.kickoff(tasks=task_list)
-    
-    # Generate new task plan
-    tasks = crew.plan(objective)
-    result = crew.kickoff(tasks)
-    
-    if result.success:
-        cache.store_plan(objective, tasks, {"objective": objective})
-    
-    return result
 ```
 
 ## Production Deployment
@@ -345,18 +256,7 @@ python plan_cache_demo.py
 pytest test_plan_cache.py -v
 ```
 
-## Benchmarks
 
-Tested on: 100 recurring "monthly budget" tasks
-
-| Setup | Avg Latency | Tokens Used | Cost |
-|-------|-------------|-------------|------|
-| No cache | 20s | 200k | $2.00 |
-| 0.85 threshold | 2s | 30k | $0.30 |
-| 0.95 threshold | 1.5s | 20k | $0.20 |
-| 0.99 threshold | 3s | 40k | $0.40 |
-
-**Recommendation:** Start with 0.95, tune based on your use case.
 
 ## Known Limitations
 
@@ -387,12 +287,6 @@ This is a reference implementation. For production use:
 
 MIT
 
-## Related Work
-
-- Aden Hive orchestrator (inspiration)
-- LangChain memory systems
-- Semantic caching in RAG systems
-- Function memoization patterns
 
 ---
 
